@@ -19,6 +19,4 @@ embeddings = OllamaEmbeddings(
     model="nomic-embed-text"
 )
 
-vector_store = Chorma(
-
-)
+vector_store = chroma()
