@@ -1,4 +1,4 @@
-# 🚀 Production RAG
+# Production RAG
 
 > A production-oriented journey through **Retrieval-Augmented Generation (RAG)** — from document ingestion and chunking to advanced retrieval, multimodal RAG, agentic workflows, evaluation, and deployment.
 
