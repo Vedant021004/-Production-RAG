@@ -1,4 +1,4 @@
-# RAG — Basic → Advanced → Job Ready 🎯
+# RAG — Basic → Advanced 
 
 Agar tum **ekdum coding-focused** path chahte ho, ye order follow karo:
 
