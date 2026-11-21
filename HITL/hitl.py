@@ -1,58 +1,29 @@
-import os
+from typing import TypedDict
 
-from dotenv import load_dotenv
-from pydantic import BaseModel
-from langchain_groq import ChatGroq
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import interrupt, Command
 from langgraph.checkpoint.memory import InMemorySaver
 
-load_dotenv()
 
-llm = ChatGroq(
-    model="openai/gpt-oss-20b",
-    api_key=os.getenv("GROQ_API_KEY")
-)
+class State(TypedDict):
+    name: str
 
 
-class State(BaseModel):
-    question: str
-    answer: str
+def ask_name(state: State):
 
-
-def llm_node(state: State):
-
-    response = llm.invoke(state.question)
+    name = interrupt("Enter your name:")
 
     return {
-        "answer": response.content
-    }
-
-
-def human_review(state: State):
-
-    decision = interrupt({
-        "question": state.question,
-        "answer": state.answer,
-        "message": "Approve this answer?"
-    })
-
-    if decision == "yes":
-        return {}
-
-    return {
-        "answer": "Answer rejected by human."
+        "name": name
     }
 
 
 builder = StateGraph(State)
 
-builder.add_node("llm", llm_node)
-builder.add_node("human", human_review)
+builder.add_node("ask_name", ask_name)
 
-builder.add_edge(START, "llm")
-builder.add_edge("llm", "human")
-builder.add_edge("human", END)
+builder.add_edge(START, "ask_name")
+builder.add_edge("ask_name", END)
 
 app = builder.compile(
     checkpointer=InMemorySaver()
@@ -66,18 +37,15 @@ config = {
 }
 
 
-result = app.invoke(
-    {
-        "question": "Explain RAG in simple words.",
-        "answer": ""
-    },
+app.invoke(
+    {"name": ""},
     config
 )
 
-print("Graph paused for human approval.")
+user_input = input("Your name: ")
 
 result = app.invoke(
-    Command(resume="yes"),
+    Command(resume=user_input),
     config
 )
 
